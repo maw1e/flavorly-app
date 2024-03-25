@@ -31,17 +31,27 @@ addBtn.addEventListener("click", () => {
   inputInstructions.value = "";
 });
 
+recipeContainerEl.addEventListener("click", (event) => {
+  if (event.target.matches(".delete")) {
+    setTimeout(() => {
+      let recipeName = event.target
+        .closest(".recipe-wrapper")
+        .querySelector("h1").textContent;
+      removeRecipeFromLocalStorage(recipeName);
+    }, 500);
+  }
+});
+
 const displayRecipe = (recipe) => {
   let recipeList = "";
   recipeContainerEl.innerHTML = "";
-
   for (let i = 0; i < recipe.length; i++) {
-    recipeList += `<div class="recipe-wrapper">
+    recipeList += `<div id="element" class="recipe-wrapper">
                   <h1>${recipe[i].name}</h1>
                   <p>${recipe[i].desc}</p>
                   <div class="buttons">
                   <button id="preview">Preview</button>
-                  <button id="delete">Delete</button>
+                  <button class="delete">Delete</button>
                   </div>
                   
                   </div>`;
@@ -53,8 +63,16 @@ const displayRecipe = (recipe) => {
   }
 };
 
-const recipeFromLocalStorage = JSON.parse(localStorage.getItem("recipe"));
+const removeRecipeFromLocalStorage = (recipeName) => {
+  let recipeIndex = recipes.findIndex((recipes) => recipes.name === recipeName);
+  if (recipeIndex > -1) {
+    recipes.splice(recipeIndex, 1);
+    localStorage.setItem("recipe", JSON.stringify(recipes));
+    displayRecipe(recipes);
+  }
+};
 
+const recipeFromLocalStorage = JSON.parse(localStorage.getItem("recipe"));
 if (recipeFromLocalStorage) {
   recipes = recipeFromLocalStorage;
   displayRecipe(recipes);
